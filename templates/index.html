@@ -86,7 +86,7 @@
             </div>
             <div class="input-container">
                 <input type="text" id="user_input"
-                    placeholder="Type your message here...">
+                    placeholder="Type your message here..." onkeypress="handleKeyPress(event)>
                 <input type="submit" value="Send" onclick="sendMessage()">
                 <input type="button" value="Log out" onclick="logout()">
             </div>
@@ -143,6 +143,11 @@
             chatbox.innerHTML = "";
 			window.location.href = "/logout";
         }
+		function handleKeyPress(event) {
+			if (event.keyCode === 13) {
+				sendMessage();
+			}
+		}
     </script>
     </body>
 </html>

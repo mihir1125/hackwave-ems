@@ -10,7 +10,7 @@ import json
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/hackwave'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/hackwave'
 app.config['SECRET_KEY'] = 'hackwaveems'
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -93,19 +93,27 @@ def chat():
     # and get a response
     # For demonstration purposes, let's just echo back the input
     sql_res = get_sql(user_input)
-    print(f"Query: {sql_res}")
     conn = mysql.connector.connect(
         host = 'localhost',
         user = 'root',
-        password = '',
+        password = 'root',
         database = 'hackwave',
     )
     cur = conn.cursor()
-    cur.execute(sql_res)
-    # if any([True if keyword in sql_res.lower() for keyword in ["update", "insert", "delete"]]):
-        # print("I AM PRINTING:", keyword)
-    conn.commit()
+    
+    if "update" in sql_res.lower() or "insert" in sql_res.lower() or "delete" in sql_res.lower():
+        print("will run commit")
+        sql_res += "BEGIN; "
+        conn.commit()
+        print(f"Query: {sql_res}")
+        cur.execute(sql_res)
+    else:
+        print(f"Query: {sql_res}")
+        cur.execute(sql_res)
+    
     bot_response = cur.fetchall()
+    cur.close()
+    conn.close()
     if len(bot_response) == 0:
         bot_response = "Done."
     else:

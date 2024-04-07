@@ -7,11 +7,11 @@ def get_sql(query):
     prompt = f"""CREATE TABLE employee (
   eid int(11) NOT NULL,
   name varchar(100) NOT NULL,
-  doj date NOT NULL DEFAULT current_timestamp(),
+  date_of_join date NOT NULL,
   mobile_no varchar(20) NOT NULL,
   salary float NOT NULL,
-  department int(11) NOT NULL,
-  designation int(11) NOT NULL
+  department varchar(60) NOT NULL,
+  designation varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE employee
@@ -23,9 +23,11 @@ COMMIT;
 
 CREATE TABLE goals (
   goal_id int(11) NOT NULL,
+  goal_description varchar(1024) NOT NULL,
   status tinyint(1) NOT NULL,
   eid int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 ALTER TABLE goals
   ADD PRIMARY KEY (goal_id),
@@ -56,7 +58,8 @@ ALTER TABLE leaves
 COMMIT;
 
 -- employee.eid can be joined with leaves.eid
--- employee.eid can be joined with goals.ei
+-- employee.eid can be joined with goals.eid
+--- When searching for string, always use case insensitive like keyword of MySQL
 
 Instruction: Generate SQL query based on these schema
 Prompt: {query}
