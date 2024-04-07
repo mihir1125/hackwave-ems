@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Chatbot Interface</title>
+        <title>Manager Chatbot</title>
         <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,6 +32,9 @@
             justify-content: flex-end;
             margin-bottom: 10px;
         }
+		.bot-message {
+			justify-content: flex-start;
+		}
         .user-message .message-bubble {
             background-color: black;
             color: #fff;
@@ -85,14 +88,17 @@
                 <input type="text" id="user_input"
                     placeholder="Type your message here...">
                 <input type="submit" value="Send" onclick="sendMessage()">
-                <input type="button" value="Clear Chat" onclick="clearChat()">
+                <input type="button" value="Log out" onclick="logout()">
             </div>
         </div>
 
         <script>
         function sendMessage() {
-            var user_input = document.getElementById("user_input").value;
-            var chatbox = document.getElementById("chatbox");
+            let user_input = document.getElementById("user_input").value;
+			if (user_input == "")
+				return
+				
+			var chatbox = document.getElementById("chatbox");
             var user_message = document.createElement("div");
             user_message.className = "user-message";
             var message_bubble = document.createElement("div");
@@ -100,6 +106,31 @@
             message_bubble.innerHTML = user_input;
             user_message.appendChild(message_bubble);
             chatbox.appendChild(user_message);
+			
+			fetch("/chat", {
+				method: "POST",
+				mode: "cors",
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*',
+				},
+				body: JSON.stringify({
+					user_input: user_input,
+				}),
+			}).then((res) => res.json())
+			.then((res) => {
+				console.log(res);
+				const response = res.response;
+				var bot_message = document.createElement("div");
+				bot_message.className = "bot-message";
+				var message_bubble = document.createElement("div");
+				message_bubble.className = "message-bubble";
+				message_bubble.innerHTML = response;
+				bot_message.appendChild(message_bubble);
+				chatbox.appendChild(bot_message);
+			})
+			
+			
             // Clear input field
             document.getElementById("user_input").value = "";
             // Scroll to bottom
@@ -107,9 +138,10 @@
             // Send the message to the server for processing (not implemented in this example)
             // You would need to use AJAX to send the message to your Flask backend
         }
-        function clearChat() {
+        function logout() {
             var chatbox = document.getElementById("chatbox");
             chatbox.innerHTML = "";
+			window.location.href = "/logout";
         }
     </script>
     </body>
